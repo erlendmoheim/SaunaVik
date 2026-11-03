@@ -1,6 +1,6 @@
 # Vikjasauna booking system
 
-A booking application I developed for Vikjasauna, a sauna business in Vik, Norway. Customers and the owner used it until around summer 2026. The service has since been retired, and this repository preserves the implementation.
+A booking application I developed for Vikjasauna, a sauna business in Vik, Norway. It was used by customers and the owner.
 
 Development in this repository took place from December 2025 to February 2026.
 
