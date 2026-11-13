@@ -1,44 +1,24 @@
 # Vikjasauna booking system
 
-A booking application I developed for Vikjasauna, a sauna business in Vik, Norway. It was used by customers and the owner.
+I built and deployed this booking system for a sauna business in Vik, Norway. Customers used it to reserve places, and the owner used it to manage bookings and close sessions.
 
-Development in this repository took place from December 2025 to February 2026.
+## Booking flow
 
-## My contribution
+Customers choose a date and session and see how many places are available. On submission, [BookingService](src/main/java/no/vik/sauna/booking/BookingService.java) checks the date, contact details, capacity and closures before saving the reservation. The owner can manage bookings and close individual sessions or entire days. [TelegramNotifier](src/main/java/no/vik/sauna/common/TelegramNotifier.java) handles optional notifications separately so a failed notification does not prevent the booking from being saved.
 
-I built the application's Java backend and web interface, including booking validation, availability calculations, administrator controls and Telegram notifications. I adjusted the application to the business's booking rules, including 90-minute sessions, capacity limits and closures for individual sessions or entire days.
+I built the backend and web interface around the business's fixed session times and capacity rules. Spring MVC controllers serve the JSP pages. Spring Data JPA stores reservations and closures in H2. The application uses Java 21 and Spring Boot, and I deployed it on Railway with Docker and Tomcat.
 
-## Features
+## Run locally
 
-- Customers can choose a date, see availability and reserve places in a session.
-- The booking service validates dates, session times, contact details and available capacity.
-- The owner can view bookings, delete bookings, close sessions or whole days, and reopen them.
-- New bookings can trigger Telegram notifications. Notification failures are handled separately so they do not prevent a booking from being saved.
-- Booking times use the Europe/Oslo time zone.
+The [Dockerfile](Dockerfile) builds a WAR with Maven and runs it in Tomcat on port 8080.
 
-## How it is structured
+```sh
+docker build -t saunavik .
+docker run --rm -p 127.0.0.1:8080:8080 --env-file .env.local saunavik
+```
 
-Spring MVC controllers handle the customer and administrator pages. `BookingService` contains the availability and booking rules, and Spring Data JPA repositories store bookings and closures in H2. JSP pages and JavaScript provide the web interface. `TelegramNotifier` handles optional booking notifications.
-
-The application is packaged as a WAR file. The Docker build uses Maven and Java 21, then runs the application in Tomcat 10.1. It was deployed on Railway.
-
-## Technology
-
-- Java 21 and Spring Boot 3.3.6
-- Spring MVC, Spring Data JPA and H2
-- JSP/JSTL, JavaScript and CSS
-- Maven, Docker and Tomcat
-- Telegram Bot API
-
-## Configuration and build
-
-The configuration uses these environment variables:
-
-- `ADMIN_KEY` for administrator access. Set an explicit value before running the application.
-- `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` for optional notifications. Notifications are disabled when these are empty.
-
-See [application.properties](src/main/resources/application.properties) for configuration, [pom.xml](pom.xml) for the Maven build, and [Dockerfile](Dockerfile) for the container build and runtime. Running the application requires an appropriately configured environment and database storage.
+Create a local `.env.local` with a strong `ADMIN_KEY` before starting the container. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` if you want booking notifications. Open [localhost:8080](http://localhost:8080/) to try the booking flow. H2 stores its file in `./data` relative to the process. Use persistent storage if you want reservations to survive container replacement. See [application.properties](src/main/resources/application.properties) for configuration.
 
 ## Limitations
 
-This is a small historical application. The repository does not include automated tests. Administrator access uses a shared key; authentication hardening and tests for concurrent bookings would be useful next steps before reusing it for a new deployment.
+This repository contains the historical booking system. Administration uses a shared key, and the repository has no automated test suite. If I reused it for a new deployment, I would replace shared-key access and add tests for concurrent bookings.
