@@ -14,10 +14,11 @@ The [Dockerfile](Dockerfile) builds a WAR with Maven and runs it in Tomcat on po
 
 ```sh
 docker build -t saunavik .
-docker run --rm -p 127.0.0.1:8080:8080 --env-file .env.local saunavik
+export ADMIN_KEY="$(openssl rand -hex 24)"
+docker run --rm -p 127.0.0.1:8080:8080 -e ADMIN_KEY saunavik
 ```
 
-Create a local `.env.local` with a strong `ADMIN_KEY` before starting the container. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` if you want booking notifications. Open [localhost:8080](http://localhost:8080/) to try the booking flow. H2 stores its file in `./data` relative to the process. Use persistent storage if you want reservations to survive container replacement. See [application.properties](src/main/resources/application.properties) for configuration.
+The command generates a key for local administrator access. To enable booking notifications, set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in your environment and pass them to Docker with `-e`. Open [localhost:8080](http://localhost:8080/) to try the booking flow. H2 stores its file in `./data` relative to the process. Use persistent storage if you want reservations to survive container replacement. See [application.properties](src/main/resources/application.properties) for configuration.
 
 ## Limitations
 
